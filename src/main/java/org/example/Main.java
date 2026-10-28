@@ -7,5 +7,4 @@ public class Main {
         ConsoleApplication application = new ConsoleApplication();
         application.run();
     }
-
 }

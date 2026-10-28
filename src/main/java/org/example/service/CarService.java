@@ -1,6 +1,7 @@
 package org.example.service;
 
 import org.example.model.Car;
+import org.example.sort.SortAlgorithm;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -37,5 +38,9 @@ public class CarService {
                 .map(Car::toString).toList();
     }
 
-
+    public List<Car> getSortedCars(SortAlgorithm<Car> algorithm, Comparator<Car> comparator) {
+        List<Car> mutableCarsList = new ArrayList<>(cars);
+        algorithm.sort(mutableCarsList, comparator);
+        return mutableCarsList;
+    }
 }

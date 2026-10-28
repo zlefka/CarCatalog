@@ -3,9 +3,13 @@ package org.example.console;
 import org.example.file.CarFileReader;
 import org.example.model.Car;
 import org.example.service.CarService;
+import org.example.sort.InsertionSort;
+import org.example.sort.SelectionSort;
+import org.example.sort.SortAlgorithm;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -21,7 +25,7 @@ public class ConsoleApplication {
                 2. Загрузить автомобили из файла
                 3. Показать все автомобили
                 4. Отфильтровать автомобили по мощности
-                5. Отсортировать собственным алгоритмом
+                5. Отсортировать автомобили по году выпуска
                 0. Выход
                 """);
     }
@@ -45,7 +49,7 @@ public class ConsoleApplication {
                 }
                 case 3 -> {
                     List<Car> allCars = carService.getAllCars();
-                    if(allCars.isEmpty()) {
+                    if (allCars.isEmpty()) {
                         System.out.println("Вы еще не добавили автомобили в коллекцию");
                     } else {
                         System.out.println("Ваши автомобили:");
@@ -58,7 +62,7 @@ public class ConsoleApplication {
                 }
                 case 5 -> {
                     System.out.println("Сортировка автомобилей");
-                    // TODO
+                    sortCars();
                 }
                 case 0 -> {
                     System.out.println("Завершение программы...");
@@ -67,6 +71,42 @@ public class ConsoleApplication {
                 default -> System.out.println("Неизвестная команда.");
             }
         }
+    }
+
+    private void sortCars() {
+        System.out.println("Выберите алгоритм сортировки автомобилей по году выпуска:");
+        System.out.println("1 - вставками, 2 - выбором");
+        int chosenAlgorithm = input.readInt();
+        SortAlgorithm<Car> algorithm;
+        if (chosenAlgorithm == 1) {
+            algorithm = new InsertionSort<>();
+        } else if (chosenAlgorithm == 2) {
+            algorithm = new SelectionSort<>();
+        } else {
+            System.out.println("Неизвестная комманда");
+            return;
+        }
+
+        Comparator<Car> comparator = Comparator.comparingInt(Car::getYear);
+        System.out.println("1 - по возрастанию, 2 - по убыванию");
+        int sortingType = input.readInt();
+        if (sortingType == 1) {
+            comparator = comparator;
+        } else if (sortingType == 2) {
+            comparator = comparator.reversed();
+        } else {
+            System.out.println("Неизвестная комманда");
+            return;
+        }
+        List<Car> sortedCars = carService.getSortedCars(algorithm, comparator);
+        if (sortedCars.isEmpty()) {
+            System.out.println("Автомобили не найдены");
+        } else {
+            for (Car car : sortedCars) {
+                System.out.println(car);
+            }
+        }
+
     }
 
     private void loadCarsFromFile() {
@@ -92,15 +132,15 @@ public class ConsoleApplication {
         System.out.println("Введите минимальную мощность автомобиля:");
         int minPower = input.readInt();
 
-        if(minPower < 0) {
+        if (minPower < 0) {
             System.out.println("Мощность не может быть отрицательной");
             return;
         }
 
         List<String> filteredList = carService.findCarsByMinPower(minPower);
-        if(!filteredList.isEmpty()) {
+        if (!filteredList.isEmpty()) {
             System.out.println("Найдено " + filteredList.size() + " автомобилей:");
-            for(String line: filteredList) {
+            for (String line : filteredList) {
                 System.out.println(line);
             }
         } else {
@@ -120,7 +160,7 @@ public class ConsoleApplication {
         try {
             Car car = new Car(model, year, power);
             carService.addCar(car);
-            System.out.println("Добавлен автомобиль " + car.getModel() + " " +car.getYear() +
+            System.out.println("Добавлен автомобиль " + car.getModel() + " " + car.getYear() +
                     " года выпуска с мощностью " + car.getPower() + " л.с.");
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
