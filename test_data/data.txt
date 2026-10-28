@@ -1,0 +1,5 @@
+Kia;222;2003
+
+Toyota Land Cruizer Prado ;543;2026
+
+Mazda CX-5;147;2025
