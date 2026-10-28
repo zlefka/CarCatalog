@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class ConsoleApplication {
@@ -31,6 +32,14 @@ public class ConsoleApplication {
     }
 
     public void run() {
+        try {
+            runMenu();
+        } catch (NoSuchElementException e) {
+            System.out.println("Ввод завершён. Завершение программы...");
+        }
+    }
+
+    private void runMenu() {
 
         while (true) {
             printMenu();
@@ -90,11 +99,9 @@ public class ConsoleApplication {
         Comparator<Car> comparator = Comparator.comparingInt(Car::getYear);
         System.out.println("1 - по возрастанию, 2 - по убыванию");
         int sortingType = input.readInt();
-        if (sortingType == 1) {
-            comparator = comparator;
-        } else if (sortingType == 2) {
+        if (sortingType == 2) {
             comparator = comparator.reversed();
-        } else {
+        } else if (sortingType != 1) {
             System.out.println("Неизвестная комманда");
             return;
         }

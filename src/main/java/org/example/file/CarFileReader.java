@@ -1,11 +1,11 @@
 package org.example.file;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.example.model.Car;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,6 +42,7 @@ public class CarFileReader {
     private List<Car> readJson(Path path) throws IOException {
         List<Car> cars = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
         try (BufferedReader reader = Files.newBufferedReader(path)) {
             JsonNode root = mapper.readTree(reader);
             if (root == null || !root.isArray()) {

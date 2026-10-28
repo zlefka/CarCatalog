@@ -34,7 +34,9 @@ public class CarService {
     }
 
     public List<String> findCarsByMinPower(int minPower) {
-        return cars.stream().filter(car -> car.getPower() >= minPower).sorted(Comparator.comparingInt(Car::getYear))
+        return cars.stream()
+                .filter(car -> car.getPower() >= minPower)
+                .sorted(Comparator.comparingInt(Car::getYear))
                 .map(Car::toString).toList();
     }
 
