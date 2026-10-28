@@ -3,6 +3,7 @@ package org.example.service;
 import org.example.model.Car;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class CarService {
@@ -29,6 +30,11 @@ public class CarService {
 
     public List<Car> getAllCars() {
         return List.copyOf(cars);
+    }
+
+    public List<String> findCarsByMinPower(int minPower) {
+        return cars.stream().filter(car -> car.getPower() >= minPower).sorted(Comparator.comparingInt(Car::getYear))
+                .map(Car::toString).toList();
     }
 
 

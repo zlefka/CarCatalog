@@ -12,6 +12,7 @@ import java.util.Scanner;
 public class ConsoleApplication {
     private final Scanner scanner = new Scanner(System.in);
     private final CarService carService = new CarService();
+    private final ConsoleInput input = new ConsoleInput(scanner);
 
     public void printMenu() {
         System.out.println("""
@@ -19,26 +20,19 @@ public class ConsoleApplication {
                 1. Добавить автомобиль вручную
                 2. Загрузить автомобили из файла
                 3. Показать все автомобили
-                4. Обработать автомобили через Stream API
+                4. Отфильтровать автомобили по мощности
                 5. Отсортировать собственным алгоритмом
                 0. Выход
                 """);
     }
 
     public void run() {
+
         while (true) {
             printMenu();
             System.out.println("Выберите пункт меню: ");
 
-            String input = scanner.nextLine();
-            int command;
-
-            try {
-                command = Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                System.out.println("Необходимо ввести число");
-                continue;
-            }
+            int command = input.readInt();
 
             switch (command) {
                 case 1 -> {
@@ -47,21 +41,7 @@ public class ConsoleApplication {
                 }
                 case 2 -> {
                     System.out.println("Введите путь к файлу");
-                    CarFileReader carFileReader = new CarFileReader();
-                    try {
-                        List<Car> cars = carFileReader.readFile(scanner.nextLine());
-                        System.out.println("Загрузка данных из файла");
-                        carService.addCars(cars);
-                        System.out.println("Загружено " + cars.size() + " автомобилей");
-                    } catch (IOException e) {
-                        System.out.println("Не удалось прочитать файл");
-                        System.out.println(e.getMessage());
-                    } catch (IllegalArgumentException e) {
-                        System.out.println(e.getMessage());
-                    } catch (UncheckedIOException e) {
-                        System.out.println("Не удалось прочитать файл: неверный формат.");
-                        System.out.println(e.getCause().getMessage());
-                    }
+                    loadCarsFromFile();
                 }
                 case 3 -> {
                     List<Car> allCars = carService.getAllCars();
@@ -73,8 +53,8 @@ public class ConsoleApplication {
                     }
                 }
                 case 4 -> {
-                    System.out.println("Обработка автомобилей");
-                    // TODO
+                    System.out.println("Фильтрация автомобилей");
+                    filterCars();
                 }
                 case 5 -> {
                     System.out.println("Сортировка автомобилей");
@@ -89,35 +69,53 @@ public class ConsoleApplication {
         }
     }
 
+    private void loadCarsFromFile() {
+        CarFileReader carFileReader = new CarFileReader();
+        try {
+            String path = scanner.nextLine();
+            System.out.println("Загрузка данных из файла");
+            List<Car> cars = carFileReader.readFile(path);
+            carService.addCars(cars);
+            System.out.println("Загружено " + cars.size() + " автомобилей");
+        } catch (IOException e) {
+            System.out.println("Не удалось прочитать файл");
+            System.out.println(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        } catch (UncheckedIOException e) {
+            System.out.println("Не удалось прочитать файл: неверный формат.");
+            System.out.println(e.getCause().getMessage());
+        }
+    }
+
+    private void filterCars() {
+        System.out.println("Введите минимальную мощность автомобиля:");
+        int minPower = input.readInt();
+
+        if(minPower < 0) {
+            System.out.println("Мощность не может быть отрицательной");
+            return;
+        }
+
+        List<String> filteredList = carService.findCarsByMinPower(minPower);
+        if(!filteredList.isEmpty()) {
+            System.out.println("Найдено " + filteredList.size() + " автомобилей:");
+            for(String line: filteredList) {
+                System.out.println(line);
+            }
+        } else {
+            System.out.println("Автомобили с указанной минимальной мощностью не найдены");
+        }
+
+    }
+
     private void addCarManually() {
         System.out.println("Введите марку и модель автомобиля: ");
         String model = scanner.nextLine();
-        int year;
-        int power;
-        while (true) {
-
-            System.out.println("Введите год выпуска:");
-            String yearStr = scanner.nextLine();
-
-            try {
-                year = Integer.parseInt(yearStr);
-                break;
-            } catch (NumberFormatException e) {
-                System.out.println("Необходимо ввести число");
-            }
-        }
-        while (true) {
-
-            System.out.println("Введите мощность в л.с.:");
-            String powerStr = scanner.nextLine();
-
-            try {
-                power = Integer.parseInt(powerStr);
-                break;
-            } catch (NumberFormatException e) {
-                System.out.println("Необходимо ввести число");
-            }
-        }
+        System.out.println("Введите год выпуска:");
+        int year = input.readInt();
+        System.out.println("Введите мощность в л.с.:");
+        int power = input.readInt();
 
         try {
             Car car = new Car(model, year, power);
