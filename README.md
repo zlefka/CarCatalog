@@ -1,4 +1,4 @@
-# UniversityJavaTasks — каталог автомобилей
+# CarCatalog — каталог автомобилей
 
 Консольное приложение на Java для хранения и обработки списка автомобилей. Можно добавлять автомобили вручную, загружать их из файлов, просматривать каталог, фильтровать по мощности и сортировать по году выпуска.
 
@@ -296,7 +296,7 @@ public interface SortAlgorithm<T> {
 ## Структура проекта
 
 ```text
-UniversityJavaTasks/
+CarCatalog/
 ├── build.gradle.kts
 ├── settings.gradle.kts
 ├── gradlew
